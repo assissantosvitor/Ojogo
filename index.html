@@ -3,20 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MiniCraft 3D - Minecraft Clássico</title>
+    <title>MiniCraft 3D</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 </head>
 <body>
-    <header>
-        <h1>MINICRAFT 3D</h1>
-        <p>Paisagem Diurna Ampla • Visual 100% Minecraft • Gravidade + Colisão</p>
-    </header>
-
     <div class="game-container">
         <canvas id="canvas"></canvas>
         
         <div class="ui-overlay">
+            <!-- Canto superior direito -->
+            <div class="top-right">
+                <div class="title-bar">MINICRAFT</div>
+                <div class="inventory">
+                    ITENS: <span id="item-count">0</span>
+                </div>
+            </div>
+
+            <!-- Crosshair -->
             <div class="crosshair">
                 <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect x="13" y="0" width="4" height="30" fill="#fff"/>
@@ -25,20 +29,7 @@
                 </svg>
             </div>
 
-            <div class="title-bar">Mundo Infinito • Dia Claro • Versão Minecraft</div>
-
-            <div class="instructions">
-                <strong>COMO JOGAR (Minecraft Style):</strong><br>
-                WASD = mover personagem<br>
-                Mouse = olhar ao redor<br>
-                ESPAÇO = pular<br>
-                Clique ESQUERDO = quebrar bloco<br>
-                Clique DIREITO = colocar bloco<br>
-                1~5 = trocar bloco<br>
-                R = regenerar mundo<br>
-                <span style="color:#ffeb3b">Paisagem ampla de dia • Mundo gigante • Visual idêntico ao Minecraft!</span>
-            </div>
-
+            <!-- Hotbar -->
             <div class="hotbar" id="hotbar"></div>
         </div>
     </div>
