@@ -1,168 +1,633 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Minecraft HTML5 Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniCraft - Minecraft 2D (HTML + CSS + JS)</title>
     <style>
-        body { margin: 0; padding: 0; overflow: hidden; background: #87CEEB; }
-        canvas { display: block; }
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: #0b0e12;
+            color: #fff;
+            font-family: 'Press Start 2P', system-ui;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            image-rendering: pixelated;
+        }
+        
+        header {
+            width: 100%;
+            background: linear-gradient(#3a3a3a, #1f1f1f);
+            padding: 12px 0;
+            text-align: center;
+            border-bottom: 4px solid #4caf50;
+            box-shadow: 0 4px 0 #000;
+            z-index: 10;
+        }
+        
+        h1 {
+            font-size: 28px;
+            text-shadow: 
+                4px 4px 0 #000,
+                -2px -2px 0 #000,
+                2px -2px 0 #000,
+                -2px 2px 0 #000;
+            letter-spacing: 4px;
+        }
+        
+        .game-container {
+            position: relative;
+            margin-top: 20px;
+            box-shadow: 
+                0 0 0 8px #222,
+                0 0 0 12px #4caf50,
+                0 20px 40px rgba(0,0,0,0.8);
+        }
+        
+        canvas {
+            display: block;
+            background: #000;
+            image-rendering: pixelated;
+        }
+        
+        .ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .hotbar {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px;
+            border: 4px solid #555;
+            border-image: linear-gradient(#aaa, #555) 1;
+            pointer-events: all;
+        }
+        
+        .slot {
+            width: 64px;
+            height: 64px;
+            background: #333;
+            border: 4px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            cursor: pointer;
+            transition: all 0.1s;
+            box-shadow: inset 0 0 0 4px #222;
+        }
+        
+        .slot.selected {
+            border-color: #ffeb3b;
+            transform: scale(1.15);
+            box-shadow: 0 0 20px #ffeb3b;
+        }
+        
+        .crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 30px;
+            height: 30px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            opacity: 0.8;
+        }
+        
+        .instructions {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.85);
+            padding: 12px 18px;
+            border: 3px solid #4caf50;
+            font-size: 12px;
+            line-height: 1.5;
+            max-width: 280px;
+            text-shadow: 2px 2px 0 #000;
+        }
+        
+        .title-bar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #222;
+            padding: 8px 16px;
+            border: 3px solid #4caf50;
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
     </style>
 </head>
 <body>
+    <header>
+        <h1>MINICRAFT</h1>
+        <p style="font-size:12px; margin-top:4px; opacity:0.8;">Modo Criativo • Feito só com HTML + CSS + JavaScript</p>
+    </header>
 
-<canvas id="gameCanvas"></canvas>
+    <div class="game-container">
+        <canvas id="canvas" width="960" height="540"></canvas>
+        
+        <!-- UI Overlay -->
+        <div class="ui-overlay">
+            <!-- Crosshair estilo Minecraft -->
+            <div class="crosshair">
+                <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="13" y="0" width="4" height="30" fill="#fff"/>
+                    <rect x="0" y="13" width="30" height="4" fill="#fff"/>
+                    <rect x="14" y="14" width="2" height="2" fill="#000"/>
+                </svg>
+            </div>
 
-<script>
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+            <!-- Título no canto -->
+            <div class="title-bar">Mundo: Plano de Teste • Dia</div>
 
-// Ajuste para Tela Cheia
-function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-window.addEventListener('resize', resize);
-resize();
+            <!-- Instruções -->
+            <div class="instructions">
+                <strong>COMO JOGAR:</strong><br>
+                WASD / Setas = mover<br>
+                ESPAÇO = pular<br>
+                Clique ESQUERDO = quebrar bloco<br>
+                Clique DIREITO = colocar bloco<br>
+                1, 2, 3 = trocar bloco<br>
+                R = regenerar mundo<br>
+                <span style="color:#ffeb3b">Modo Criativo total!</span>
+            </div>
 
-const player = {
-    x: 100,
-    y: 100,
-    width: 30,
-    height: 60,
-    dy: 0,
-    jumpForce: 15,
-    gravity: 0.7,
-    speed: 6,
-    grounded: false,
-    direction: 1,
-    walkCycle: 0
-};
+            <!-- Hotbar -->
+            <div class="hotbar" id="hotbar"></div>
+        </div>
+    </div>
 
-// Configurações do Mundo
-const world = {
-    grassHeight: 40,
-    dirtDepth: 120, // Profundidade da terra antes da pedra
-};
-
-const keys = {};
-window.addEventListener("keydown", e => keys[e.code] = true);
-window.addEventListener("keyup", e => keys[e.code] = false);
-
-// Função para desenhar o solo estilo Minecraft
-function drawWorld() {
-    const groundY = canvas.height - 200; // Onde o chão começa
-
-    // 1. Camada de Grama (Verde)
-    ctx.fillStyle = "#5ea832";
-    ctx.fillRect(0, groundY, canvas.width, 20);
-
-    // 2. Camada de Terra (Marrom)
-    ctx.fillStyle = "#855d32";
-    ctx.fillRect(0, groundY + 20, canvas.width, world.dirtDepth);
-    
-    // Detalhes da terra (manchas escuras)
-    ctx.fillStyle = "#6b4a28";
-    for(let i = 0; i < canvas.width; i += 40) {
-        for(let j = groundY + 30; j < groundY + world.dirtDepth; j += 40) {
-            if((i+j) % 3 === 0) ctx.fillRect(i, j, 15, 15);
-        }
-    }
-
-    // 3. Camada de Pedra (Cinza)
-    const stoneY = groundY + 20 + world.dirtDepth;
-    ctx.fillStyle = "#7d7d7d";
-    ctx.fillRect(0, stoneY, canvas.width, canvas.height - stoneY);
-
-    // Detalhes da pedra e "Minérios"
-    for(let i = 0; i < canvas.width; i += 60) {
-        for(let j = stoneY + 10; j < canvas.height; j += 50) {
-            ctx.fillStyle = (i+j) % 7 === 0 ? "#555" : "#8a8a8a"; // Pedras mais escuras
-            ctx.fillRect(i + (j%10), j, 20, 20);
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Configurações do mundo (Minecraft-like)
+        const TILE_SIZE = 32;
+        const WORLD_WIDTH = 60;   // blocos de largura
+        const WORLD_HEIGHT = 30;  // blocos de altura
+        let world = [];
+        
+        // Tipos de blocos (com texturas simuladas no desenho)
+        const BLOCKS = {
+            0: { name: 'ar', color: '#87CEEB' },           // ar (céu)
+            1: { name: 'grama', color: '#4CAF50' },       // grama
+            2: { name: 'terra', color: '#8B4513' },       // terra
+            3: { name: 'pedra', color: '#777777' },       // pedra
+            4: { name: 'madeira', color: '#A0522D' },     // tronco
+            5: { name: 'folhas', color: '#228B22' }       // folhas
+        };
+        
+        // Jogador
+        let player = {
+            x: 400,
+            y: 200,
+            vx: 0,
+            vy: 0,
+            width: 28,
+            height: 48,
+            speed: 6,
+            jump: -14,
+            flying: false
+        };
+        
+        // Câmera
+        let camera = { x: 0, y: 0 };
+        
+        // Controles
+        let keys = {};
+        let selectedBlock = 1; // 1=grama, 2=terra, 3=pedra
+        
+        // Hotbar
+        const hotbarBlocks = [1, 2, 3, 4, 5];
+        
+        // Partículas (quebra de blocos)
+        let particles = [];
+        
+        // Gerar mundo procedural (estilo Minecraft)
+        function generateWorld() {
+            world = Array.from({ length: WORLD_HEIGHT }, () => Array(WORLD_WIDTH).fill(0));
             
-            // "Carvão" raro
-            if((i*j) % 13 === 0) {
-                ctx.fillStyle = "#222";
-                ctx.fillRect(i+5, j+5, 8, 8);
+            for (let x = 0; x < WORLD_WIDTH; x++) {
+                // Terreno base com variação
+                let height = Math.floor(18 + Math.sin(x * 0.1) * 4 + Math.random() * 3);
+                
+                // Grama no topo
+                world[height][x] = 1;
+                
+                // Terra abaixo
+                for (let y = height + 1; y < height + 5; y++) {
+                    if (y < WORLD_HEIGHT) world[y][x] = 2;
+                }
+                
+                // Pedra profunda
+                for (let y = height + 5; y < WORLD_HEIGHT; y++) {
+                    world[y][x] = Math.random() > 0.9 ? 3 : 3;
+                }
+                
+                // Árvores aleatórias
+                if (Math.random() > 0.85 && height > 5) {
+                    const treeHeight = 4 + Math.floor(Math.random() * 3);
+                    // Tronco
+                    for (let h = 0; h < treeHeight; h++) {
+                        if (height - h - 1 >= 0) world[height - h - 1][x] = 4;
+                    }
+                    // Folhas (3x3 no topo)
+                    for (let ly = -2; ly <= 0; ly++) {
+                        for (let lx = -1; lx <= 1; lx++) {
+                            const tx = x + lx;
+                            const ty = height - treeHeight + ly;
+                            if (tx >= 0 && tx < WORLD_WIDTH && ty >= 0 && ty < WORLD_HEIGHT) {
+                                if (world[ty][tx] === 0) world[ty][tx] = 5;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Céu limpo
+            for (let y = 0; y < 12; y++) {
+                for (let x = 0; x < WORLD_WIDTH; x++) {
+                    if (world[y][x] === 0) world[y][x] = 0;
+                }
+            }
+            
+            // Posição inicial do jogador
+            player.x = WORLD_WIDTH * TILE_SIZE / 2;
+            player.y = 200;
+        }
+        
+        // Colisão simples com blocos
+        function getTile(x, y) {
+            const tx = Math.floor(x / TILE_SIZE);
+            const ty = Math.floor(y / TILE_SIZE);
+            if (tx < 0 || tx >= WORLD_WIDTH || ty < 0 || ty >= WORLD_HEIGHT) return 3; // pedra fora do mapa
+            return world[ty][tx];
+        }
+        
+        function collide(x, y, w, h) {
+            const left = Math.floor(x / TILE_SIZE);
+            const right = Math.floor((x + w - 1) / TILE_SIZE);
+            const top = Math.floor(y / TILE_SIZE);
+            const bottom = Math.floor((y + h - 1) / TILE_SIZE);
+            
+            for (let ty = top; ty <= bottom; ty++) {
+                for (let tx = left; tx <= right; tx++) {
+                    if (tx < 0 || tx >= WORLD_WIDTH || ty < 0 || ty >= WORLD_HEIGHT) continue;
+                    if (world[ty][tx] !== 0) return true;
+                }
+            }
+            return false;
+        }
+        
+        // Desenhar um bloco com textura pixelada (Minecraft style)
+        function drawBlock(x, y, type) {
+            const screenX = x - camera.x;
+            const screenY = y - camera.y;
+            
+            if (screenX < -TILE_SIZE || screenX > canvas.width || screenY < -TILE_SIZE || screenY > canvas.height) return;
+            
+            ctx.save();
+            
+            // Cor base
+            ctx.fillStyle = BLOCKS[type].color;
+            ctx.fillRect(screenX, screenY, TILE_SIZE, TILE_SIZE);
+            
+            // Textura pixelada simples (estilo Minecraft)
+            ctx.fillStyle = 'rgba(0,0,0,0.25)';
+            
+            if (type === 1) { // Grama
+                ctx.fillStyle = '#3E8E3E';
+                ctx.fillRect(screenX, screenY, TILE_SIZE, 6); // grama no topo
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.fillRect(screenX + 4, screenY + 12, 4, 4);
+                ctx.fillRect(screenX + 18, screenY + 18, 6, 3);
+            } 
+            else if (type === 2) { // Terra
+                ctx.fillRect(screenX + 4, screenY + 6, 8, 4);
+                ctx.fillRect(screenX + 22, screenY + 18, 6, 6);
+                ctx.fillRect(screenX + 8, screenY + 22, 4, 4);
+            } 
+            else if (type === 3) { // Pedra
+                ctx.fillRect(screenX + 3, screenY + 3, 7, 7);
+                ctx.fillRect(screenX + 16, screenY + 12, 10, 5);
+                ctx.fillRect(screenX + 6, screenY + 20, 8, 4);
+                ctx.fillStyle = 'rgba(255,255,255,0.15)';
+                ctx.fillRect(screenX + 20, screenY + 4, 4, 4);
+            } 
+            else if (type === 4) { // Madeira
+                ctx.fillStyle = '#6B3A1F';
+                ctx.fillRect(screenX + 6, screenY, 4, TILE_SIZE); // veios
+                ctx.fillRect(screenX + 22, screenY, 4, TILE_SIZE);
+            } 
+            else if (type === 5) { // Folhas
+                ctx.fillStyle = '#1F6B1F';
+                ctx.fillRect(screenX + 4, screenY + 4, TILE_SIZE - 8, TILE_SIZE - 8);
+                ctx.fillStyle = BLOCKS[5].color;
+                ctx.fillRect(screenX + 10, screenY + 10, TILE_SIZE - 20, TILE_SIZE - 20);
+            }
+            
+            // Borda pixelada (efeito 3D)
+            ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(screenX + 2, screenY + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+            
+            ctx.restore();
+        }
+        
+        // Desenhar o mundo
+        function drawWorld() {
+            // Céu com gradiente (imersividade)
+            const sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            sky.addColorStop(0, '#5EB8FF');
+            sky.addColorStop(1, '#A0D8FF');
+            ctx.fillStyle = sky;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Sol (toque Minecraft)
+            ctx.fillStyle = '#FFEB3B';
+            ctx.beginPath();
+            ctx.arc(780, 90, 28, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'rgba(255,255,100,0.3)';
+            ctx.beginPath();
+            ctx.arc(780, 90, 38, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Nuvens fofas
+            ctx.fillStyle = 'rgba(255,255,255,0.9)';
+            ctx.fillRect(120, 80, 140, 30);
+            ctx.fillRect(100, 95, 180, 25);
+            ctx.fillRect(420, 55, 110, 28);
+            ctx.fillRect(390, 70, 160, 22);
+            
+            // Desenhar blocos visíveis
+            const startX = Math.max(0, Math.floor(camera.x / TILE_SIZE) - 1);
+            const endX = Math.min(WORLD_WIDTH, Math.floor((camera.x + canvas.width) / TILE_SIZE) + 2);
+            const startY = Math.max(0, Math.floor(camera.y / TILE_SIZE) - 1);
+            const endY = Math.min(WORLD_HEIGHT, Math.floor((camera.y + canvas.height) / TILE_SIZE) + 2);
+            
+            for (let y = startY; y < endY; y++) {
+                for (let x = startX; x < endX; x++) {
+                    const type = world[y][x];
+                    if (type === 0) continue;
+                    drawBlock(x * TILE_SIZE, y * TILE_SIZE, type);
+                }
             }
         }
-    }
-}
-
-function drawPlayer() {
-    ctx.save();
-    ctx.translate(player.x + player.width/2, player.y + player.height/2);
-    if (player.direction === -1) ctx.scale(-1, 1);
-
-    const breathe = Math.sin(Date.now() / 200) * 2;
-
-    // Pernas (Azul Jeans)
-    ctx.fillStyle = "#3c44aa";
-    ctx.fillRect(-10, 10, 8, 20); 
-    ctx.fillRect(2, 10, 8, 20);  
-
-    // Camisa (Azul Ciano clássico do Steve)
-    ctx.fillStyle = "#00a7a3";
-    ctx.fillRect(-12, -15 + breathe, 24, 25); 
-
-    // Braços
-    ctx.fillStyle = "#e0ac69";
-    ctx.fillRect(-15, -12 + breathe, 6, 20); 
-    ctx.fillRect(9, -12 + breathe, 6, 20);  
-
-    // Cabeça
-    ctx.fillStyle = "#e0ac69";
-    ctx.fillRect(-10, -35 + breathe, 20, 20);
-
-    // Cabelo e Olhos
-    ctx.fillStyle = "#4e342e";
-    ctx.fillRect(-10, -35 + breathe, 20, 6); // Cabelo
-    ctx.fillStyle = "white";
-    ctx.fillRect(3, -28 + breathe, 6, 4); // Olho
-    ctx.fillStyle = "#4e342e";
-    ctx.fillRect(6, -28 + breathe, 2, 2); // Pupila
-
-    ctx.restore();
-}
-
-function update() {
-    if (keys["ArrowRight"]) { player.x += player.speed; player.direction = 1; }
-    if (keys["ArrowLeft"]) { player.x -= player.speed; player.direction = -1; }
-
-    if (keys["Space"] && player.grounded) {
-        player.dy = -player.jumpForce;
-        player.grounded = false;
-    }
-
-    player.dy += player.gravity;
-    player.y += player.dy;
-
-    const groundLevel = canvas.height - 200;
-
-    if (player.y + player.height > groundLevel) {
-        player.y = groundLevel - player.height;
-        player.dy = 0;
-        player.grounded = true;
-    }
-
-    if (player.x < 0) player.x = 0;
-    if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
-}
-
-function loop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Fundo do Céu
-    ctx.fillStyle = "#87CEEB";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    drawWorld();
-    update();
-    drawPlayer();
-    requestAnimationFrame(loop);
-}
-
-loop();
-</script>
-
+        
+        // Desenhar jogador (Steve estilizado)
+        function drawPlayer() {
+            const px = player.x - camera.x;
+            const py = player.y - camera.y;
+            
+            // Corpo
+            ctx.fillStyle = '#3B8CFF';
+            ctx.fillRect(px + 4, py + 16, 20, 28);
+            
+            // Cabeça (cabelo castanho)
+            ctx.fillStyle = '#2C2C2C';
+            ctx.fillRect(px + 6, py + 4, 16, 14);
+            // Rosto
+            ctx.fillStyle = '#F4C29C';
+            ctx.fillRect(px + 8, py + 8, 12, 10);
+            
+            // Olhos
+            ctx.fillStyle = '#111';
+            ctx.fillRect(px + 11, py + 11, 3, 3);
+            ctx.fillRect(px + 20, py + 11, 3, 3);
+            
+            // Braços
+            ctx.fillStyle = '#F4C29C';
+            ctx.fillRect(px + 2, py + 18, 6, 18);   // braço esquerdo
+            ctx.fillRect(px + 22, py + 18, 6, 18);  // braço direito
+            
+            // Pernas
+            ctx.fillStyle = '#2C2C2C';
+            ctx.fillRect(px + 7, py + 42, 7, 10);
+            ctx.fillRect(px + 18, py + 42, 7, 10);
+            
+            // Sombra leve
+            ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            ctx.fillRect(px + 6, py + 54, 18, 4);
+        }
+        
+        // Atualizar partículas
+        function updateParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.3; // gravidade
+                p.life--;
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+        }
+        
+        function drawParticles() {
+            for (let p of particles) {
+                const alpha = p.life / 25;
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x - camera.x, p.y - camera.y, 6, 6);
+            }
+            ctx.globalAlpha = 1;
+        }
+        
+        // Criar partículas de quebra
+        function breakBlock(tx, ty) {
+            const type = world[ty][tx];
+            if (type === 0) return;
+            
+            const color = BLOCKS[type].color;
+            const baseX = tx * TILE_SIZE + TILE_SIZE / 2;
+            const baseY = ty * TILE_SIZE + TILE_SIZE / 2;
+            
+            for (let i = 0; i < 18; i++) {
+                particles.push({
+                    x: baseX + (Math.random() * 28 - 14),
+                    y: baseY + (Math.random() * 28 - 14),
+                    vx: (Math.random() * 8 - 4),
+                    vy: (Math.random() * -7 - 2),
+                    life: 22 + Math.random() * 12,
+                    color: color
+                });
+            }
+            
+            // Quebrar o bloco
+            world[ty][tx] = 0;
+        }
+        
+        // Loop principal do jogo
+        function gameLoop() {
+            // Atualizar física
+            player.vx = 0;
+            
+            if (keys['ArrowLeft'] || keys['a'] || keys['A']) player.vx = -player.speed;
+            if (keys['ArrowRight'] || keys['d'] || keys['D']) player.vx = player.speed;
+            
+            // Pulo / voo
+            if ((keys[' '] || keys['Space']) && !player.flying) {
+                if (collide(player.x, player.y + player.height + 2, player.width, 4)) {
+                    player.vy = player.jump;
+                }
+            }
+            
+            // Gravidade
+            if (!player.flying) player.vy += 0.65;
+            
+            // Movimento horizontal
+            let nextX = player.x + player.vx;
+            if (!collide(nextX, player.y, player.width, player.height)) {
+                player.x = nextX;
+            } else {
+                player.vx = 0;
+            }
+            
+            // Movimento vertical
+            let nextY = player.y + player.vy;
+            if (!collide(player.x, nextY, player.width, player.height)) {
+                player.y = nextY;
+            } else {
+                if (player.vy > 0) player.vy = 0; // chão
+                if (player.vy < 0) player.vy = 0; // teto
+            }
+            
+            // Atualizar câmera (segue o jogador)
+            camera.x = Math.max(0, Math.min(player.x - canvas.width / 2 + player.width / 2, WORLD_WIDTH * TILE_SIZE - canvas.width));
+            camera.y = Math.max(0, Math.min(player.y - canvas.height / 2 + player.height / 2, WORLD_HEIGHT * TILE_SIZE - canvas.height));
+            
+            // Atualizar partículas
+            updateParticles();
+            
+            // Desenhar tudo
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawWorld();
+            drawParticles();
+            drawPlayer();
+            
+            // Hotbar no canvas (pequeno ícone no canto)
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Criar hotbar visual (HTML + CSS)
+        function createHotbar() {
+            const hotbarEl = document.getElementById('hotbar');
+            hotbarEl.innerHTML = '';
+            
+            hotbarBlocks.forEach((blockType, index) => {
+                const slot = document.createElement('div');
+                slot.className = `slot ${index === 0 ? 'selected' : ''}`;
+                slot.innerHTML = `
+                    <div style="width:100%; height:100%; background:${BLOCKS[blockType].color}; display:flex; align-items:center; justify-content:center; font-size:36px; filter: brightness(1.1);">
+                        ${blockType === 1 ? '🌱' : 
+                          blockType === 2 ? '🟫' : 
+                          blockType === 3 ? '🪨' : 
+                          blockType === 4 ? '🪵' : '🌳'}
+                    </div>
+                `;
+                slot.onclick = () => {
+                    selectedBlock = blockType;
+                    document.querySelectorAll('.slot').forEach(s => s.classList.remove('selected'));
+                    slot.classList.add('selected');
+                };
+                hotbarEl.appendChild(slot);
+            });
+        }
+        
+        // Interação com mouse
+        function handleMouse(e) {
+            if (e.button !== 0 && e.button !== 2) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left + camera.x;
+            const mouseY = e.clientY - rect.top + camera.y;
+            
+            const tx = Math.floor(mouseX / TILE_SIZE);
+            const ty = Math.floor(mouseY / TILE_SIZE);
+            
+            if (tx < 0 || tx >= WORLD_WIDTH || ty < 0 || ty >= WORLD_HEIGHT) return;
+            
+            if (e.button === 0) { // Esquerdo = quebrar
+                breakBlock(tx, ty);
+            } 
+            else if (e.button === 2) { // Direito = colocar
+                if (world[ty][tx] === 0) {
+                    // Não colocar dentro do jogador
+                    const playerTileX = Math.floor(player.x / TILE_SIZE);
+                    const playerTileY = Math.floor(player.y / TILE_SIZE);
+                    if (!(Math.abs(tx - playerTileX) < 2 && Math.abs(ty - playerTileY) < 3)) {
+                        world[ty][tx] = selectedBlock;
+                    }
+                }
+            }
+        }
+        
+        // Teclas
+        function handleKeys(e) {
+            keys[e.key] = e.type === 'keydown';
+            
+            // Trocar bloco com números
+            if (e.key >= '1' && e.key <= '5') {
+                const idx = parseInt(e.key) - 1;
+                if (hotbarBlocks[idx]) {
+                    selectedBlock = hotbarBlocks[idx];
+                    document.querySelectorAll('.slot').forEach((s, i) => {
+                        s.classList.toggle('selected', i === idx);
+                    });
+                }
+            }
+            
+            // Regenerar mundo
+            if (e.key.toLowerCase() === 'r') {
+                generateWorld();
+            }
+            
+            // Ativar voo criativo (F)
+            if (e.key.toLowerCase() === 'f' && e.type === 'keydown') {
+                player.flying = !player.flying;
+                player.vy = 0;
+                alert(player.flying ? '🧚 VOO ATIVADO (Modo Criativo)' : '🌍 Gravidade ativada');
+            }
+        }
+        
+        // Inicializar tudo
+        function init() {
+            generateWorld();
+            createHotbar();
+            
+            // Eventos
+            window.addEventListener('keydown', handleKeys);
+            window.addEventListener('keyup', handleKeys);
+            canvas.addEventListener('mousedown', handleMouse);
+            canvas.addEventListener('contextmenu', e => { e.preventDefault(); handleMouse(e); });
+            
+            // Iniciar loop
+            gameLoop();
+            
+            console.log('%c✅ MiniCraft carregado! Aproveite o Minecraft em puro HTML/CSS/JS!', 'color:#4caf50; font-size:16px');
+        }
+        
+        // Iniciar o jogo
+        window.onload = init;
+    </script>
 </body>
 </html>
