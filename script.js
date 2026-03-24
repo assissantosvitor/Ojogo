@@ -4,20 +4,36 @@ renderer.setSize(window.innerWidth, window.innerHeight - 56);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0x87CEEB, 30, 120);
 
-const camera = new THREE.PerspectiveCamera(70, window.innerWidth / (window.innerHeight - 56), 0.1, 200);
+// Céu Minecraft clássico + neblina distante (para visual amplo)
+scene.fog = new THREE.Fog(0x87CEEB, 60, 280);
 
-// Luzes
-scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-const sun = new THREE.DirectionalLight(0xffeecc, 1.1);
-sun.position.set(40, 70, 50);
-scene.add(sun);
+// Skybox simples (esfera grande azul clara com sol)
+const skyGeo = new THREE.SphereGeometry(280, 32, 32);
+const skyMat = new THREE.MeshBasicMaterial({
+    color: 0x87CEEB,
+    side: THREE.BackSide
+});
+const sky = new THREE.Mesh(skyGeo, skyMat);
+scene.add(sky);
 
-// ====================== VARIÁVEIS DO JOGO ======================
+// Luz do dia (sol forte)
+scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+const sunLight = new THREE.DirectionalLight(0xffeecc, 1.35);
+sunLight.position.set(80, 120, 60);
+scene.add(sunLight);
+
+// Sol visível no céu
+const sunGeo = new THREE.SphereGeometry(8, 16, 16);
+const sunMat = new THREE.MeshBasicMaterial({ color: 0xFFEB3B });
+const sunMesh = new THREE.Mesh(sunGeo, sunMat);
+sunMesh.position.set(100, 140, 80);
+scene.add(sunMesh);
+
+// ====================== VARIÁVEIS ======================
 const BLOCK_SIZE = 1;
-const WORLD_RADIUS = 18;
-let blocksMap = new Map();        // "x,y,z" → tipo
+const WORLD_RADIUS = 45;        // MUNDO MUITO MAIOR (paisagem ampla)
+let blocksMap = new Map();
 let blockMeshes = [];
 
 const BLOCK_TYPES = {
@@ -31,63 +47,32 @@ const BLOCK_TYPES = {
 let selectedBlockType = 1;
 let keys = {};
 let pointerLocked = false;
-let yaw = Math.PI;          // rotação horizontal
-let pitch = 0;              // rotação vertical
+let yaw = Math.PI;
+let pitch = 0;
 
-// Personagem (com gravidade e colisão)
+// Personagem (Steve blocky)
 const player = {
-    position: new THREE.Vector3(0, 20, 20),
+    position: new THREE.Vector3(0, 25, 30),
     velocity: new THREE.Vector3(0, 0, 0),
     width: 0.6,
     height: 1.8,
     onGround: false,
-    speed: 0.28
+    speed: 0.32
 };
 
-// Mesh do personagem (Steve simplificado)
 let playerGroup;
-function createPlayerMesh() {
-    const group = new THREE.Group();
-    
-    // Corpo
-    const bodyGeo = new THREE.BoxGeometry(0.6, 1.2, 0.3);
-    const bodyMat = new THREE.MeshLambertMaterial({ color: 0x3B8CFF });
-    const body = new THREE.Mesh(bodyGeo, bodyMat);
-    body.position.y = 0.9;
-    group.add(body);
-    
-    // Cabeça
-    const headGeo = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-    const headMat = new THREE.MeshLambertMaterial({ color: 0xF4C29C });
-    const head = new THREE.Mesh(headGeo, headMat);
-    head.position.y = 1.95;
-    group.add(head);
-    
-    // Pernas
-    const legGeo = new THREE.BoxGeometry(0.25, 0.9, 0.3);
-    const legMat = new THREE.MeshLambertMaterial({ color: 0x222222 });
-    const legL = new THREE.Mesh(legGeo, legMat);
-    legL.position.set(-0.2, 0.35, 0);
-    const legR = legL.clone();
-    legR.position.x = 0.2;
-    group.add(legL, legR);
-    
-    scene.add(group);
-    return group;
-}
 
-// Destaque do bloco
+// Destaque do bloco (igual Minecraft)
 const highlight = new THREE.LineSegments(
     new THREE.EdgesGeometry(new THREE.BoxGeometry(1.02, 1.02, 1.02)),
-    new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 4 })
+    new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 5 })
 );
 scene.add(highlight);
 highlight.visible = false;
 
-// Raycaster
 const raycaster = new THREE.Raycaster();
 
-// ====================== MUNDO ======================
+// ====================== GERAÇÃO DO MUNDO (PAISAGEM AMPLA) ======================
 function generateWorld() {
     blockMeshes.forEach(m => scene.remove(m));
     blockMeshes = [];
@@ -95,23 +80,32 @@ function generateWorld() {
 
     for (let x = -WORLD_RADIUS; x <= WORLD_RADIUS; x++) {
         for (let z = -WORLD_RADIUS; z <= WORLD_RADIUS; z++) {
-            const height = Math.floor(3 + Math.sin(x * 0.25) * 3 + Math.cos(z * 0.25) * 3);
-            
+            // Terreno mais natural e amplo (montanhas, vales)
+            const height = Math.floor(
+                4 +
+                Math.sin(x * 0.08) * 6 +
+                Math.cos(z * 0.09) * 6 +
+                Math.sin((x + z) * 0.05) * 4
+            );
+
             for (let y = 0; y <= height; y++) {
-                let type = 3;
-                if (y === height) type = 1;
-                else if (y >= height - 3) type = 2;
+                let type = 3; // pedra
+                if (y === height) type = 1;           // grama
+                else if (y >= height - 4) type = 2;   // terra
                 addBlock(x, y, z, type);
             }
 
-            if (Math.random() > 0.87 && height > 3) {
-                const treeH = 5 + Math.floor(Math.random() * 3);
+            // Árvores mais espaçadas e realistas
+            if (Math.random() > 0.92 && height > 5) {
+                const treeH = 6 + Math.floor(Math.random() * 4);
                 for (let h = 1; h <= treeH; h++) addBlock(x, height + h, z, 4);
                 for (let lx = -2; lx <= 2; lx++) {
-                    for (let ly = -2; ly <= 2; ly++) {
+                    for (let ly = -3; ly <= 2; ly++) {
                         for (let lz = -2; lz <= 2; lz++) {
-                            if (Math.abs(lx) + Math.abs(ly) + Math.abs(lz) < 5) {
-                                const tx = x + lx, ty = height + treeH + ly, tz = z + lz;
+                            if (Math.abs(lx) + Math.abs(lz) + Math.abs(ly) < 6) {
+                                const tx = x + lx;
+                                const ty = height + treeH + ly;
+                                const tz = z + lz;
                                 if (!blocksMap.has(`${tx},${ty},${tz}`)) addBlock(tx, ty, tz, 5);
                             }
                         }
@@ -121,8 +115,7 @@ function generateWorld() {
         }
     }
 
-    // Posição inicial do personagem (acima do chão)
-    player.position.set(0, 15, 20);
+    player.position.set(0, 30, 30);
     player.velocity.set(0, 0, 0);
 }
 
@@ -131,7 +124,10 @@ function addBlock(x, y, z, type) {
     if (blocksMap.has(key)) return;
 
     const geo = new THREE.BoxGeometry(BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-    const mat = new THREE.MeshLambertMaterial({ color: BLOCK_TYPES[type].color, flatShading: true });
+    const mat = new THREE.MeshLambertMaterial({
+        color: BLOCK_TYPES[type].color,
+        flatShading: true
+    });
     const mesh = new THREE.Mesh(geo, mat);
     mesh.position.set(x + 0.5, y + 0.5, z + 0.5);
     scene.add(mesh);
@@ -144,7 +140,7 @@ function removeBlock(x, y, z) {
     const key = `${Math.floor(x)},${Math.floor(y)},${Math.floor(z)}`;
     if (!blocksMap.has(key)) return;
 
-    const index = blockMeshes.findIndex(m => 
+    const index = blockMeshes.findIndex(m =>
         Math.floor(m.position.x) === Math.floor(x) &&
         Math.floor(m.position.y) === Math.floor(y) &&
         Math.floor(m.position.z) === Math.floor(z)
@@ -156,7 +152,7 @@ function removeBlock(x, y, z) {
     blocksMap.delete(key);
 }
 
-// ====================== COLISÃO ======================
+// ====================== COLISÃO + GRAVIDADE ======================
 function checkCollision(pos) {
     const half = player.width / 2;
     const minX = Math.floor(pos.x - half);
@@ -174,6 +170,39 @@ function checkCollision(pos) {
         }
     }
     return false;
+}
+
+// ====================== PERSONAGEM ======================
+function createPlayerMesh() {
+    const group = new THREE.Group();
+    
+    // Corpo (azul Minecraft)
+    const body = new THREE.Mesh(
+        new THREE.BoxGeometry(0.6, 1.2, 0.3),
+        new THREE.MeshLambertMaterial({ color: 0x3B8CFF })
+    );
+    body.position.y = 0.9;
+    group.add(body);
+    
+    // Cabeça
+    const head = new THREE.Mesh(
+        new THREE.BoxGeometry(0.5, 0.5, 0.5),
+        new THREE.MeshLambertMaterial({ color: 0xF4C29C })
+    );
+    head.position.y = 1.95;
+    group.add(head);
+    
+    // Pernas
+    const legGeo = new THREE.BoxGeometry(0.25, 0.9, 0.3);
+    const legMat = new THREE.MeshLambertMaterial({ color: 0x222222 });
+    const legL = new THREE.Mesh(legGeo, legMat);
+    legL.position.set(-0.2, 0.35, 0);
+    const legR = legL.clone();
+    legR.position.x = 0.2;
+    group.add(legL, legR);
+    
+    scene.add(group);
+    return group;
 }
 
 // ====================== HOTBAR ======================
@@ -196,10 +225,7 @@ function createHotbar() {
 
 // ====================== CONTROLES ======================
 canvas.addEventListener('click', () => canvas.requestPointerLock());
-
-document.addEventListener('pointerlockchange', () => {
-    pointerLocked = document.pointerLockElement === canvas;
-});
+document.addEventListener('pointerlockchange', () => pointerLocked = document.pointerLockElement === canvas);
 
 document.addEventListener('mousemove', e => {
     if (!pointerLocked) return;
@@ -235,28 +261,24 @@ canvas.addEventListener('mousedown', e => {
     const by = Math.floor(p.y - n.y * 0.001);
     const bz = Math.floor(p.z - n.z * 0.001);
 
-    if (e.button === 0) { // quebrar
-        removeBlock(bx, by, bz);
-    } else if (e.button === 2) { // colocar
-        const px = bx + n.x;
-        const py = by + n.y;
-        const pz = bz + n.z;
-
-        // evita colocar dentro do personagem
-        const dist = player.position.distanceTo(new THREE.Vector3(px + 0.5, py + 0.5, pz + 0.5));
-        if (dist > 2) addBlock(px, py, pz, selectedBlockType);
+    if (e.button === 0) removeBlock(bx, by, bz);
+    else if (e.button === 2) {
+        const px = bx + n.x, py = by + n.y, pz = bz + n.z;
+        if (player.position.distanceTo(new THREE.Vector3(px + 0.5, py + 0.5, pz + 0.5)) > 2) {
+            addBlock(px, py, pz, selectedBlockType);
+        }
     }
 });
 canvas.addEventListener('contextmenu', e => e.preventDefault());
 
-// ====================== LOOP ======================
+// ====================== LOOP PRINCIPAL ======================
 function animate() {
     requestAnimationFrame(animate);
 
-    // === GRAVIDADE ===
+    // Gravidade
     player.velocity.y -= 0.032;
 
-    // === MOVIMENTO HORIZONTAL (relativo à câmera) ===
+    // Movimento WASD (relativo à rotação da câmera)
     let move = new THREE.Vector3();
     if (keys['w']) move.z -= 1;
     if (keys['s']) move.z += 1;
@@ -272,27 +294,22 @@ function animate() {
         player.velocity.x = player.velocity.z = 0;
     }
 
-    // === PULO ===
     if (keys[' '] && player.onGround) {
         player.velocity.y = 0.48;
         player.onGround = false;
     }
 
-    // === COLISÃO E MOVIMENTO (eixo por eixo) ===
+    // Colisão eixo por eixo
     let next = player.position.clone();
-
-    // X
     next.x += player.velocity.x;
     if (!checkCollision(next)) player.position.x = next.x;
     else player.velocity.x = 0;
 
-    // Z
     next = player.position.clone();
     next.z += player.velocity.z;
     if (!checkCollision(next)) player.position.z = next.z;
     else player.velocity.z = 0;
 
-    // Y (gravidade)
     next = player.position.clone();
     next.y += player.velocity.y;
     if (!checkCollision(next)) {
@@ -303,22 +320,20 @@ function animate() {
         player.velocity.y = 0;
     }
 
-    // === ATUALIZA MESH DO PERSONAGEM ===
+    // Atualiza personagem
     playerGroup.position.copy(player.position);
     playerGroup.rotation.y = yaw;
 
-    // === CÂMERA 3ª PESSOA (menos imersiva) ===
-    const dist = 9;
-    const height = 4.5;
+    // Câmera 3ª pessoa (mais ampla)
+    const dist = 10;
     const camX = player.position.x - Math.sin(yaw) * dist;
     const camZ = player.position.z - Math.cos(yaw) * dist;
-    const camY = player.position.y + height + Math.sin(pitch) * 3;
+    const camY = player.position.y + 5 + Math.sin(pitch) * 3;
 
-    const idealCam = new THREE.Vector3(camX, camY, camZ);
-    camera.position.lerp(idealCam, 0.15);
+    camera.position.lerp(new THREE.Vector3(camX, camY, camZ), 0.18);
     camera.lookAt(player.position.x, player.position.y + 1.4, player.position.z);
 
-    // === DESTAQUE DO BLOCO ===
+    // Destaque do bloco
     raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
     const hits = raycaster.intersectObjects(blockMeshes);
     if (hits.length > 0) {
@@ -326,9 +341,7 @@ function animate() {
         const pos = hit.point.clone().add(hit.face.normal.clone().multiplyScalar(0.001));
         highlight.position.set(Math.floor(pos.x) + 0.5, Math.floor(pos.y) + 0.5, Math.floor(pos.z) + 0.5);
         highlight.visible = true;
-    } else {
-        highlight.visible = false;
-    }
+    } else highlight.visible = false;
 
     renderer.render(scene, camera);
 }
@@ -346,7 +359,7 @@ function init() {
         renderer.setSize(window.innerWidth, window.innerHeight - 56);
     });
 
-    console.log('%c✅ MiniCraft 3D com personagem, gravidade e colisão carregado!', 'color:#4caf50; font-size:16px');
+    console.log('%c✅ MiniCraft 3D com paisagem diurna AMPLA e visual idêntico ao Minecraft carregado!', 'color:#4caf50;font-size:16px');
 }
 
 window.onload = init;
