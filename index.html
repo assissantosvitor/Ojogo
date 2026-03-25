@@ -22,17 +22,14 @@
     <div id="battle-area">
       <div id="background"></div>
 
-      <!-- personagem do jogador -->
       <div class="character player" id="player">
-        <div class="sprite idle" id="playerSprite"></div>
+        <div class="sprite idle" id="playerSprite">YOU</div>
       </div>
 
-      <!-- personagem inimigo -->
       <div class="character enemy" id="enemy">
-        <div class="sprite idle" id="enemySprite"></div>
+        <div class="sprite idle" id="enemySprite">RIVAL</div>
       </div>
 
-      <!-- linha de alvo e colunas de setas -->
       <div id="targets">
         <div class="target" data-key="s">S</div>
         <div class="target" data-key="d">D</div>
@@ -40,7 +37,6 @@
         <div class="target" data-key="l">L</div>
       </div>
 
-      <!-- área onde as setas descem -->
       <div id="arrow-lane"></div>
     </div>
 
@@ -49,7 +45,6 @@
       <div id="combo">Combo: <span id="comboVal">0</span></div>
     </div>
 
-    <!-- áudio opcional: coloque song.mp3 na mesma pasta -->
     <audio id="music" src="song.mp3" preload="auto"></audio>
   </div>
 
