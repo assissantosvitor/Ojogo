@@ -1,19 +1,57 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Mini FNF Clone</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mini FNF Battle</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Mini Friday Night Funkin</h1>
-  <div id="game">
-    <div class="target" style="left:20px">S</div>
-    <div class="target" style="left:120px">D</div>
-    <div class="target" style="left:220px">K</div>
-    <div class="target" style="left:320px">L</div>
+  <div id="stage">
+    <div id="hud">
+      <div class="health left">
+        <div class="label">Você</div>
+        <div class="bar"><div class="fill" id="playerHealth"></div></div>
+      </div>
+      <div class="health right">
+        <div class="label">Rival</div>
+        <div class="bar"><div class="fill" id="enemyHealth"></div></div>
+      </div>
+    </div>
+
+    <div id="battle-area">
+      <div id="background"></div>
+
+      <!-- personagem do jogador -->
+      <div class="character player" id="player">
+        <div class="sprite idle" id="playerSprite"></div>
+      </div>
+
+      <!-- personagem inimigo -->
+      <div class="character enemy" id="enemy">
+        <div class="sprite idle" id="enemySprite"></div>
+      </div>
+
+      <!-- linha de alvo e colunas de setas -->
+      <div id="targets">
+        <div class="target" data-key="s">S</div>
+        <div class="target" data-key="d">D</div>
+        <div class="target" data-key="k">K</div>
+        <div class="target" data-key="l">L</div>
+      </div>
+
+      <!-- área onde as setas descem -->
+      <div id="arrow-lane"></div>
+    </div>
+
+    <div id="info">
+      <div id="score">Pontuação: <span id="scoreVal">0</span></div>
+      <div id="combo">Combo: <span id="comboVal">0</span></div>
+    </div>
+
+    <!-- áudio opcional: coloque song.mp3 na mesma pasta -->
+    <audio id="music" src="song.mp3" preload="auto"></audio>
   </div>
-  <div id="score">Pontuação: 0</div>
 
   <script src="script.js"></script>
 </body>
