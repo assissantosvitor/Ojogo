@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mini FNF Battle</title>
+  <title>Mini FNF Fullscreen</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -22,14 +22,31 @@
     <div id="battle-area">
       <div id="background"></div>
 
+      <!-- personagem do jogador -->
       <div class="character player" id="player">
-        <div class="sprite idle" id="playerSprite">YOU</div>
+        <div class="sprite idle" id="playerSprite">
+          <div class="face">
+            <div class="eye left"></div>
+            <div class="eye right"></div>
+            <div class="mouth"></div>
+          </div>
+        </div>
+        <div class="name">Vitor</div>
       </div>
 
+      <!-- personagem inimigo -->
       <div class="character enemy" id="enemy">
-        <div class="sprite idle" id="enemySprite">RIVAL</div>
+        <div class="sprite idle" id="enemySprite">
+          <div class="face enemy-face">
+            <div class="eye left"></div>
+            <div class="eye right"></div>
+            <div class="mouth"></div>
+          </div>
+        </div>
+        <div class="name">Rival</div>
       </div>
 
+      <!-- linha de alvo e colunas de setas (centralizadas) -->
       <div id="targets">
         <div class="target" data-key="s">S</div>
         <div class="target" data-key="d">D</div>
@@ -37,6 +54,7 @@
         <div class="target" data-key="l">L</div>
       </div>
 
+      <!-- área onde as setas descem -->
       <div id="arrow-lane"></div>
     </div>
 
