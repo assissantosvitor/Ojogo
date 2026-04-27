@@ -2,68 +2,42 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mini FNF Fullscreen</title>
+  <title>Ojogo - Battle Rhythm</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="stage">
+    <div id="dialogue-box">
+      <p id="dialogue-text">Clique para começar a batalha!</p>
+    </div>
+
     <div id="hud">
-      <div class="health left">
-        <div class="label">Você</div>
-        <div class="bar"><div class="fill" id="playerHealth"></div></div>
-      </div>
-      <div class="health right">
-        <div class="label">Rival</div>
-        <div class="bar"><div class="fill" id="enemyHealth"></div></div>
-      </div>
+      <div class="health"><div class="fill" id="playerHealth"></div></div>
+      <div class="health"><div class="fill" id="enemyHealth"></div></div>
     </div>
 
     <div id="battle-area">
-      <div id="background"></div>
-
-      <!-- personagem do jogador -->
       <div class="character player" id="player">
-        <div class="sprite idle" id="playerSprite">
-          <div class="face">
-            <div class="eye left"></div>
-            <div class="eye right"></div>
-            <div class="mouth"></div>
-          </div>
-        </div>
-        <div class="name">Vitor</div>
+        <div class="sprite">Herói</div>
       </div>
-
-      <!-- personagem inimigo -->
       <div class="character enemy" id="enemy">
-        <div class="sprite idle" id="enemySprite">
-          <div class="face enemy-face">
-            <div class="eye left"></div>
-            <div class="eye right"></div>
-            <div class="mouth"></div>
-          </div>
-        </div>
-        <div class="name">Rival</div>
+        <div class="sprite">Rival</div>
       </div>
 
-      <!-- linha de alvo e colunas de setas (centralizadas) -->
       <div id="targets">
         <div class="target" data-key="s">S</div>
         <div class="target" data-key="d">D</div>
         <div class="target" data-key="k">K</div>
         <div class="target" data-key="l">L</div>
       </div>
-
-      <!-- área onde as setas descem -->
       <div id="arrow-lane"></div>
     </div>
 
     <div id="info">
       <div id="score">Pontuação: <span id="scoreVal">0</span></div>
       <div id="combo">Combo: <span id="comboVal">0</span></div>
+      <div id="phase">Fase: <span id="phaseVal">1</span></div>
     </div>
-
-    <audio id="music" src="song.mp3" preload="auto"></audio>
   </div>
 
   <script src="script.js"></script>
