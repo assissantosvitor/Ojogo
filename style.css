@@ -1,79 +1,97 @@
-/* Reset e base */
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{
-  background:linear-gradient(180deg,#0b0f1a,#07101a);
-  color:#e9eef6;
-  font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:12px;
+/* Reset básico */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Container principal */
-#game{
-  width:1100px;
-  max-width:98vw;
-  height:640px;
-  background:linear-gradient(180deg,#0b1220,#07101a);
-  border-radius:14px;
-  box-shadow:0 20px 60px rgba(0,0,0,.7);
-  overflow:hidden;
-  position:relative;
-  display:flex;
-  flex-direction:column;
+body {
+    background-color: #f1f2f6;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
-/* Topbar */
-#topbar{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.health-wrap{display:flex;gap:12px;align-items:center}
-.label{font-size:13px;color:#bcd;opacity:.9}
-.bar{width:260px;height:18px;background:#07101a;border-radius:10px;border:1px solid rgba(255,255,255,.03);overflow:hidden}
-.bar .fill{height:100%;width:100%;background:linear-gradient(90deg,#4fe3c1,#ff3b6b);transition:width .25s linear}
-#phaseBox{min-width:220px;text-align:center}
-#dialogue{position:relative;background:rgba(0,0,0,.55);padding:10px 14px;border-radius:10px;font-weight:700;color:#eafaf6;max-width:520px;margin:0 auto;box-shadow:inset 0 -6px 18px rgba(0,0,0,.4)}
-
-/* Arena */
-#arena{flex:1;position:relative;display:flex;align-items:flex-end;justify-content:center;padding-bottom:36px;overflow:hidden}
-.bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;filter:contrast(.95) saturate(1.05)}
-
-/* Personagens */
-.character{position:relative;z-index:4;display:flex;flex-direction:column;align-items:center;gap:8px;width:220px;height:320px}
-.player{left:80px;position:absolute;bottom:60px;transform:scaleX(1)}
-.enemy{right:80px;position:absolute;bottom:60px;transform:scaleX(-1)}
-.sprite{width:200px;height:240px;border-radius:14px;background:linear-gradient(180deg,#1b2430,#0f1720);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:28px;color:#e9eef6;box-shadow:0 18px 40px rgba(0,0,0,.6), inset 0 -8px 30px rgba(0,0,0,.45);transition:transform .12s ease, box-shadow .12s ease, filter .12s ease;position:relative;overflow:hidden}
-.portrait{width:100%;height:100%;border-radius:14px;display:flex;align-items:center;justify-content:center}
-.name{font-weight:800;color:#cfeff0;letter-spacing:.6px}
-
-/* animações */
-.hit{transform:translateY(-18px) scale(1.03);box-shadow:0 30px 60px rgba(255,59,107,.12)}
-.win{transform:translateY(-6px) scale(1.02);box-shadow:0 0 40px rgba(79,227,193,.18)}
-
-/* Pista de setas */
-#lane{position:absolute;left:50%;transform:translateX(-50%);bottom:18px;width:640px;height:420px;pointer-events:none;z-index:6}
-#targets{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:640px;display:flex;justify-content:space-between;gap:12px;z-index:8}
-.target{width:140px;height:120px;border-radius:12px;background:rgba(255,255,255,.03);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:34px;color:#dff;backdrop-filter:blur(2px);border:2px solid rgba(255,255,255,.03);transition:transform .08s ease, background .12s ease, box-shadow .12s}
-.target.active{transform:scale(1.06);background:linear-gradient(180deg, rgba(255,59,107,.14), rgba(79,227,193,.06));box-shadow:0 8px 30px rgba(0,0,0,.45)}
-.arrow{position:absolute;width:140px;height:120px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:36px;color:#07101a;background:linear-gradient(180deg,#fff,#e6f7f6);box-shadow:0 12px 30px rgba(0,0,0,.45);top:-160px;transition:top .02s linear}
-
-/* Feedback */
-#feedback{position:absolute;left:50%;transform:translateX(-50%);top:36px;z-index:10;font-weight:900;font-size:22px;padding:6px 12px;border-radius:8px;background:rgba(0,0,0,.5);display:none;color:#fff}
-
-/* Footer */
-#footer{padding:12px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)}
-.infoBox{background:rgba(11,17,32,.7);padding:8px 12px;border-radius:8px;font-weight:800;color:#cfeff0}
-
-/* Responsividade */
-@media (max-width:1100px){
-  #game{height:86vh}
-  .target{width:110px;height:90px;font-size:28px}
-  .arrow{width:110px;height:90px;font-size:28px}
-  .sprite{width:160px;height:200px}
-  .character{width:180px;height:260px}
+.container {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    width: 350px;
 }
-@media (max-width:720px){
-  #game{width:98vw;height:92vh}
-  #lane{width:92%}
-  #targets{width:92%}
+
+.stats {
+    margin-bottom: 30px;
+}
+
+.score {
+    font-size: 48px;
+    font-weight: bold;
+    color: #78d505;
+    margin-top: 10px;
+}
+
+/* Botão Principal */
+.main-btn {
+    background: linear-gradient(180deg, #caff88 0%, #78d505 100%);
+    border: 2px solid #5aa304;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 8px 15px rgba(120, 213, 5, 0.4);
+    transition: transform 0.1s, box-shadow 0.1s;
+    margin-bottom: 40px;
+}
+
+.main-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 5px rgba(120, 213, 5, 0.4);
+}
+
+/* Loja de Upgrades */
+.upgrades {
+    border-top: 2px solid #eee;
+    padding-top: 20px;
+}
+
+.upgrades h3 {
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.upgrade-btn {
+    width: 100%;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.upgrade-btn:hover {
+    background: #e2e6ea;
+}
+
+.upgrade-btn:disabled {
+    background: #eee;
+    color: #aaa;
+    cursor: not-allowed;
+    border-color: #eee;
+}
+
+.cost {
+    font-size: 12px;
+    color: #666;
+    font-weight: bold;
 }
