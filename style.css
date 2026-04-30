@@ -1,97 +1,45 @@
-/* Reset básico */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+:root{
+  --bg:#0f1724;
+  --card:#0b1220;
+  --accent:#7c3aed;
+  --muted:#94a3b8;
+  --glass: rgba(255,255,255,0.03);
 }
-
-body {
-    background-color: #f1f2f6;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-
-.container {
-    text-align: center;
-    background: white;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    width: 350px;
-}
-
-.stats {
-    margin-bottom: 30px;
-}
-
-.score {
-    font-size: 48px;
-    font-weight: bold;
-    color: #78d505;
-    margin-top: 10px;
-}
-
-/* Botão Principal */
-.main-btn {
-    background: linear-gradient(180deg, #caff88 0%, #78d505 100%);
-    border: 2px solid #5aa304;
-    border-radius: 50%;
-    width: 150px;
-    height: 150px;
-    font-size: 20px;
-    font-weight: bold;
-    color: #fff;
-    cursor: pointer;
-    box-shadow: 0 8px 15px rgba(120, 213, 5, 0.4);
-    transition: transform 0.1s, box-shadow 0.1s;
-    margin-bottom: 40px;
-}
-
-.main-btn:active {
-    transform: scale(0.95);
-    box-shadow: 0 2px 5px rgba(120, 213, 5, 0.4);
-}
-
-/* Loja de Upgrades */
-.upgrades {
-    border-top: 2px solid #eee;
-    padding-top: 20px;
-}
-
-.upgrades h3 {
-    margin-bottom: 15px;
-    font-size: 18px;
-}
-
-.upgrade-btn {
-    width: 100%;
-    background: #f8f9fa;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.2s;
-}
-
-.upgrade-btn:hover {
-    background: #e2e6ea;
-}
-
-.upgrade-btn:disabled {
-    background: #eee;
-    color: #aaa;
-    cursor: not-allowed;
-    border-color: #eee;
-}
-
-.cost {
-    font-size: 12px;
-    color: #666;
-    font-weight: bold;
-}
+*{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+html,body{height:100%;margin:0;background:
+  radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.08), transparent 8%),
+  linear-gradient(180deg,#071025 0%, #071827 100%);
+  color:#e6eef8}
+.wrap{max-width:1100px;margin:28px auto;padding:20px;display:grid;grid-template-columns:1fr 360px;gap:20px}
+.panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:18px;box-shadow:0 6px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+header h1{font-size:20px;margin:0;color:var(--accent)}
+.subtitle{color:var(--muted)}
+.main{padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
+.big-btn{width:100%;height:220px;border-radius:12px;background:linear-gradient(180deg,#1f2937,#0b1220);display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;border:2px solid rgba(255,255,255,0.03);transition:transform .08s ease, box-shadow .12s}
+.big-btn:active{transform:scale(.98);box-shadow:0 8px 30px rgba(124,58,237,0.12)}
+.big-btn .count{font-size:44px;font-weight:700;color:#fff;letter-spacing:1px}
+.big-btn .label{color:var(--muted);margin-top:6px}
+.stats{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
+.stat{background:var(--glass);padding:10px;border-radius:8px;min-width:120px;text-align:center}
+.stat .num{font-weight:700;font-size:18px}
+.upgrades{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px}
+.upgrade{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)}
+.upgrade button{background:var(--accent);border:none;color:white;padding:8px 10px;border-radius:8px;cursor:pointer}
+.upgrade button:disabled{opacity:.45;cursor:not-allowed}
+.right-col{display:flex;flex-direction:column;gap:12px}
+.memes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.meme{background:linear-gradient(180deg, rgba(255,255,255,0.015), transparent);padding:10px;border-radius:10px;display:flex;flex-direction:column;align-items:center;gap:8px;border:1px solid rgba(255,255,255,0.02);cursor:pointer;transition:transform .12s,opacity .12s,filter .12s}
+.meme:hover{transform:translateY(-4px)}
+.meme svg{width:100%;height:80px}
+.meme .caption{font-size:13px;color:var(--muted);text-align:center}
+.progress{height:10px;background:rgba(255,255,255,0.03);border-radius:999px;overflow:hidden;margin-top:12px}
+.progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#06b6d4);width:0%}
+footer{grid-column:1/-1;margin-top:8px;color:var(--muted);font-size:13px;text-align:center}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.small{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:8px;color:var(--muted);cursor:pointer}
+.achievements{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+.ach{background:rgba(255,255,255,0.02);padding:6px 8px;border-radius:8px;color:var(--muted);font-size:13px}
+.panel-title{font-weight:700;margin-bottom:8px}
+.tip{margin-top:12px;color:var(--muted);font-size:13px}
+@media(max-width:900px){.wrap{grid-template-columns:1fr;}.right-col{order:2}}
