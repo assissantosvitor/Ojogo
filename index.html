@@ -1,37 +1,96 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Clicker Game</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Stimulation Clicker</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <div class="stats">
-            <h2>Estimulação</h2>
-            <div class="score" id="score">0</div>
+  <div class="wrap">
+    <header>
+      <h1>Stimulation Clicker</h1>
+      <div class="subtitle">Clique, compre upgrades e desbloqueie memes</div>
+    </header>
+
+    <main class="panel main">
+      <button id="clicker" class="big-btn" aria-label="Clique para ganhar stimulation">
+        <div class="count" id="count">0</div>
+        <div class="label">Stimulation</div>
+      </button>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="num" id="perClick">+1</div>
+          <div class="label">por clique</div>
+        </div>
+        <div class="stat">
+          <div class="num" id="perSec">0</div>
+          <div class="label">por segundo</div>
+        </div>
+        <div class="stat">
+          <div class="num" id="spent">0</div>
+          <div class="label">Gasto</div>
+        </div>
+      </div>
+
+      <div id="upgrades" class="upgrades"></div>
+
+      <div class="progress" title="Progresso para próximo meme">
+        <i id="progressBar"></i>
+      </div>
+
+      <div class="controls">
+        <button class="small" id="saveBtn">Salvar local</button>
+        <button class="small" id="loadBtn">Carregar</button>
+        <button class="small" id="resetBtn">Resetar</button>
+      </div>
+
+      <div id="achievements" class="achievements"></div>
+    </main>
+
+    <aside class="panel right-col">
+      <div class="panel-title">Memes desbloqueáveis</div>
+      <div id="memeGrid" class="memes">
+        <div class="meme" data-key="this-is-fine">
+          <svg viewBox="0 0 200 80" preserveAspectRatio="xMidYMid meet">
+            <rect x="6" y="6" width="188" height="68" rx="8" fill="#111827" stroke="rgba(255,255,255,0.02)"/>
+            <text x="100" y="40" fill="#f97316" font-size="18" font-weight="700" text-anchor="middle" font-family="sans-serif">This is fine</text>
+          </svg>
+          <div class="caption">This is fine — quando tudo vai mal, mas você segue</div>
         </div>
 
-        <button class="main-btn" id="clickBtn">
-            CLIQUE ME!
-        </button>
-
-        <div class="upgrades">
-            <h3>Loja de Upgrades</h3>
-            <button class="upgrade-btn" id="upgrade1">
-                Melhorar Clique (+1 por clique)
-                <br>
-                <span class="cost">Custo: <span id="upgrade1-cost">10</span></span>
-            </button>
-            <button class="upgrade-btn" id="upgrade2">
-                Auto-Clicker (+1 por segundo)
-                <br>
-                <span class="cost">Custo: <span id="upgrade2-cost">50</span></span>
-            </button>
+        <div class="meme" data-key="woman-cat">
+          <svg viewBox="0 0 200 80" preserveAspectRatio="xMidYMid meet">
+            <rect x="6" y="6" width="188" height="68" rx="8" fill="#071827" stroke="rgba(255,255,255,0.02)"/>
+            <text x="100" y="40" fill="#f43f5e" font-size="14" font-weight="700" text-anchor="middle" font-family="sans-serif">Woman yelling at cat</text>
+          </svg>
+          <div class="caption">Woman yelling at cat — discussões épicas em 2 quadros</div>
         </div>
-    </div>
 
-    <script src="script.js"></script>
+        <div class="meme" data-key="distracted">
+          <svg viewBox="0 0 200 80" preserveAspectRatio="xMidYMid meet">
+            <rect x="6" y="6" width="188" height="68" rx="8" fill="#071827" stroke="rgba(255,255,255,0.02)"/>
+            <text x="100" y="40" fill="#60a5fa" font-size="14" font-weight="700" text-anchor="middle" font-family="sans-serif">Distracted Boyfriend</text>
+          </svg>
+          <div class="caption">Distracted Boyfriend — prioridades em conflito</div>
+        </div>
+
+        <div class="meme" data-key="bernie-mittens">
+          <svg viewBox="0 0 200 80" preserveAspectRatio="xMidYMid meet">
+            <rect x="6" y="6" width="188" height="68" rx="8" fill="#071827" stroke="rgba(255,255,255,0.02)"/>
+            <text x="100" y="40" fill="#fbbf24" font-size="14" font-weight="700" text-anchor="middle" font-family="sans-serif">Bernie Mittens</text>
+          </svg>
+          <div class="caption">Bernie Mittens — aconchego e viralidade</div>
+        </div>
+      </div>
+
+      <div class="tip">Dica: clique rápido, compre auto-clickers e multipliers para desbloquear memes.</div>
+    </aside>
+
+    <footer class="panel footer">Feito com ❤️ — versão simples em HTML CSS e JavaScript</footer>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
