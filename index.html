@@ -3,85 +3,61 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Stimulation Clicker — Collage</title>
+  <title>Combo Clicker — Mais power quanto mais você clica</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="scene">
-    <!-- chaotic collage background elements -->
-    <div class="dvd dvd-1">DVD</div>
-    <div class="dvd dvd-2">DVD</div>
-    <div class="dvd dvd-3">DVD</div>
-    <div class="dvd dvd-4">DVD</div>
+  <canvas id="bg" aria-hidden="true"></canvas>
 
-    <div class="photo photo-sandwich">🥪</div>
-    <div class="photo photo-runner">🏃‍♂️</div>
-    <div class="photo photo-mic">🎤</div>
-    <div class="eggs">🥚🥚🥚</div>
+  <div class="container">
+    <header>
+      <h1>Combo Clicker</h1>
+      <div class="subtitle">Clique rápido para aumentar seu poder</div>
+    </header>
 
-    <div class="notif">Cloud — Seu armazenamento está 100% cheio</div>
-
-    <div class="top-row">
-      <div class="bitcoin">
-        <div class="btc-label">BTC</div>
-        <canvas id="btcChart" width="220" height="60"></canvas>
-        <div class="btc-value">$51,871</div>
-      </div>
-
-      <div class="quiz">
-        <div class="q-title">Which word rhymes with "trough"?</div>
-        <div class="q-opts">
-          <button class="opt">Through</button>
-          <button class="opt">Rough</button>
-          <button class="opt">Cough</button>
-          <button class="opt">Ugh</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- central game UI -->
-    <main id="game">
-      <div class="game-card">
-        <div class="level">Level <span id="level">30</span></div>
-
-        <div class="stacks">
-          <div class="stack left">
-            <div class="big-num" id="total">171.500</div>
-            <div class="muted">stimulation</div>
-            <div class="collect">Collect <span id="collect">+314,500</span></div>
-          </div>
-
-          <div class="center-click">
-            <div class="small-num" id="bank">1.243.269</div>
-            <button id="clicker" class="clicker">Click me</button>
-            <div class="per-sec" id="perSec">4,918 /s</div>
-          </div>
-
-          <div class="stack right">
-            <div class="btn-row">
-              <button class="menu">Screen Time</button>
-              <button class="menu">Item Shop</button>
-            </div>
-            <div class="btn-row">
-              <button class="menu">Achievements</button>
-              <button class="menu">Inbox</button>
-            </div>
-          </div>
+    <main class="game">
+      <section class="panel center">
+        <div class="meter">
+          <div class="meter-value" id="comboMeter"></div>
         </div>
 
-        <div class="progress-row">
-          <div class="progress-bar">
-            <i id="progressFill"></i>
-          </div>
-          <div class="progress-text" id="progressText">Progress 42%</div>
+        <button id="clicker" class="big-btn" aria-label="Clique">
+          <span id="ripple-layer"></span>
+          <div class="count" id="count">0</div>
+          <div class="sub" id="perClick">+1</div>
+          <div class="combo" id="comboText">Combo x1</div>
+        </button>
+
+        <div class="stats">
+          <div><strong id="perSec">0</strong><div class="muted">/s</div></div>
+          <div><strong id="bestCombo">x1</strong><div class="muted">melhor combo</div></div>
+          <div><strong id="totalClicks">0</strong><div class="muted">cliques</div></div>
         </div>
-      </div>
+
+        <div class="controls">
+          <button id="save" class="small">Salvar</button>
+          <button id="load" class="small">Carregar</button>
+          <button id="reset" class="small">Resetar</button>
+        </div>
+      </section>
+
+      <aside class="panel right">
+        <h3>Upgrades</h3>
+        <div id="upgrades" class="upgrades"></div>
+
+        <h3>Histórico</h3>
+        <div id="log" class="log"></div>
+      </aside>
     </main>
 
-    <!-- decorative bottom clutter -->
-    <div class="bottom-clutter">
-      <div class="ticker">NEWS • MEMES • ADS • NOTIFICATIONS • ADS • MEMES</div>
-    </div>
+    <footer>
+      <div class="progress-row">
+        <div class="progress" title="Progresso geral">
+          <i id="progressFill"></i>
+        </div>
+        <div class="progress-label" id="progressLabel">0%</div>
+      </div>
+    </footer>
   </div>
 
   <script src="script.js"></script>
